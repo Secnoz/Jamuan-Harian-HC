@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistem POS Jamuan Harian - Divisi Human Capital. Pesan makanan dan minuman harian dengan mudah.">
+    <title>POS Jamuan Harian - Divisi HC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-decoration">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header id="app-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#logoGrad)"/>
+                        <path d="M8 12h16M8 16h16M8 20h10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="24" cy="22" r="4" fill="#34d399" stroke="white" stroke-width="1.5"/>
+                        <path d="M22.5 22l1 1 2-2" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+                                <stop stop-color="#6366f1"/>
+                                <stop offset="1" stop-color="#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Jamuan Harian</h1>
+                    <span class="subtitle">Divisi Human Capital</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- Date Picker -->
+                <div class="date-picker-group">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <input type="date" id="datePicker" onchange="onDateChange()">
+                </div>
+
+                <!-- Admin Badge (shown when logged in) -->
+                <div class="admin-badge hidden" id="adminBadge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <span>Admin</span>
+                </div>
+
+                <!-- Recap Button (admin only) -->
+                <button class="btn-recap hidden" id="btnRecap" onclick="toggleRecap()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                        <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        <path d="M9 12h6M9 16h6"/>
+                    </svg>
+                    <span>Rekap</span>
+                </button>
+
+                <!-- Admin Login/Logout Button -->
+                <button class="btn-admin-login" id="btnAdminLogin" onclick="showAdminLogin()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0110 0v4"/>
+                    </svg>
+                    <span>Admin</span>
+                </button>
+                <button class="btn-admin-logout hidden" id="btnAdminLogout" onclick="adminLogout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                    </svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <main id="mainApp">
+        <!-- Step 1: User Selection -->
+        <section class="step-section" id="stepUser">
+            <div class="step-card glass-card animate-in">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h2>Pilih Nama Anda</h2>
+                        <p>Ketik atau pilih nama Anda dari daftar</p>
+                    </div>
+                </div>
+                <!-- Selected Date Display -->
+                <div class="selected-date-display" id="selectedDateDisplay"></div>
+                <div class="user-search-wrapper">
+                    <div class="search-input-group">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <input type="text" id="userSearch" placeholder="Cari nama..." autocomplete="off">
+                    </div>
+                </div>
+                <div class="user-grid" id="userGrid"></div>
+            </div>
+        </section>
+
+        <!-- Step 2: Menu & Cart -->
+        <section class="step-section hidden" id="stepMenu">
+            <!-- User Banner -->
+            <div class="user-banner glass-card animate-in">
+                <div class="user-banner-left">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <span class="greeting">Halo,</span>
+                        <span class="user-name" id="userName"></span>
+                    </div>
+                </div>
+                <div class="user-banner-right">
+                    <div class="budget-display">
+                        <span class="budget-label">Sisa Budget</span>
+                        <span class="budget-amount" id="budgetAmount">Rp15.000</span>
+                        <div class="budget-bar">
+                            <div class="budget-bar-fill" id="budgetBarFill"></div>
+                        </div>
+                    </div>
+                    <button class="btn-change-user" onclick="changeUser()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+                        </svg>
+                        Ganti
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Tabs -->
+            <div class="category-tabs glass-card animate-in" id="categoryTabs">
+                <button class="cat-tab active" data-category="all" onclick="filterCategory('all')">
+                    <span class="cat-emoji">🍽️</span> Semua
+                </button>
+                <button class="cat-tab" data-category="makanan" onclick="filterCategory('makanan')">
+                    <span class="cat-emoji">🍜</span> Makanan
+                </button>
+                <button class="cat-tab" data-category="snack" onclick="filterCategory('snack')">
+                    <span class="cat-emoji">🍫</span> Snack
+                </button>
+                <button class="cat-tab" data-category="minuman" onclick="filterCategory('minuman')">
+                    <span class="cat-emoji">🥤</span> Minuman
+                </button>
+            </div>
+
+            <!-- Menu Search -->
+            <div class="menu-search-bar glass-card animate-in">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" id="menuSearch" placeholder="Cari menu..." oninput="filterMenu()">
+            </div>
+
+            <!-- Content Layout -->
+            <div class="content-layout">
+                <!-- Menu Grid -->
+                <div class="menu-section">
+                    <div class="menu-grid" id="menuGrid"></div>
+                </div>
+
+                <!-- Cart Sidebar -->
+                <div class="cart-section glass-card animate-in" id="cartSection">
+                    <div class="cart-header">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                            </svg>
+                            Pesanan Anda
+                        </h3>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </div>
+                    <div class="cart-items" id="cartItems">
+                        <div class="cart-empty">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                            </svg>
+                            <p>Belum ada pesanan</p>
+                            <span>Pilih menu di sebelah kiri</span>
+                        </div>
+                    </div>
+                    <div class="cart-footer">
+                        <div class="cart-total">
+                            <span>Total</span>
+                            <span class="total-amount" id="totalAmount">Rp0</span>
+                        </div>
+                        <button class="btn-submit" id="btnSubmit" onclick="submitOrder()" disabled>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                            Kirim Pesanan
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Cart Toggle -->
+            <button class="mobile-cart-toggle" id="mobileCartToggle" onclick="toggleMobileCart()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                </svg>
+                <span class="mobile-cart-badge" id="mobileCartBadge">0</span>
+            </button>
+        </section>
+
+        <!-- Recap Section (Admin Only) -->
+        <section class="step-section hidden" id="stepRecap">
+            <div class="recap-container animate-in">
+                <div class="recap-header glass-card">
+                    <div class="recap-title">
+                        <h2>📊 Rekap Pesanan</h2>
+                        <p id="recapDate"></p>
+                    </div>
+                    <div class="recap-actions">
+                        <button class="btn-export" onclick="exportRecap()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                            </svg>
+                            Export CSV
+                        </button>
+                        <button class="btn-export-excel" onclick="exportExcel()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <path d="M10 12l4 6M14 12l-4 6"/>
+                            </svg>
+                            Export Excel
+                        </button>
+                        <button class="btn-clear-all" onclick="clearAllOrders()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                            Hapus Semua
+                        </button>
+                        <button class="btn-back" onclick="toggleRecap()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Kembali
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6)">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statPeople">0</span>
+                            <span class="stat-label">Orang Pesan</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #f97316)">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                <path d="M8 21h8M12 17v4"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statItems">0</span>
+                            <span class="stat-label">Total Item</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399)">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statTotal">Rp0</span>
+                            <span class="stat-label">Total Pengeluaran</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #ec4899, #f43f5e)">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M12 20V10M18 20V4M6 20v-4"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="statAvg">Rp0</span>
+                            <span class="stat-label">Rata-rata / Orang</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="recap-table-wrapper glass-card">
+                    <table class="recap-table" id="recapTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Item Pesanan</th>
+                                <th>Total</th>
+                                <th>Waktu</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recapTableBody">
+                        </tbody>
+                    </table>
+                    <div class="recap-empty hidden" id="recapEmpty">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        </svg>
+                        <p>Belum ada pesanan pada tanggal ini</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay hidden" id="successModal">
+        <div class="modal-content glass-card">
+            <div class="modal-icon success">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <path d="M22 4L12 14.01l-3-3"/>
+                </svg>
+            </div>
+            <h3>Pesanan Berhasil! 🎉</h3>
+            <p id="modalMessage"></p>
+            <div class="modal-actions">
+                <button class="btn-modal-primary" onclick="closeModal()">OK, Tutup</button>
+                <button class="btn-modal-secondary admin-only-el hidden" id="btnModalRecap" onclick="closeModalAndRecap()">Lihat Rekap</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal-overlay hidden" id="confirmModal">
+        <div class="modal-content glass-card">
+            <div class="modal-icon warning">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <h3 id="confirmTitle">Konfirmasi</h3>
+            <p id="confirmMessage"></p>
+            <div class="modal-actions">
+                <button class="btn-modal-danger" id="confirmYes">Ya, Hapus</button>
+                <button class="btn-modal-secondary" onclick="closeConfirm()">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal-overlay hidden" id="adminLoginModal">
+        <div class="modal-content glass-card">
+            <div class="modal-icon admin-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <h3>Login Admin</h3>
+            <p>Masukkan kredensial untuk akses penuh</p>
+            <div class="admin-login-form">
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input type="text" id="adminUsername" placeholder="Username" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <div class="password-input-group">
+                        <input type="password" id="adminPassword" placeholder="Password" autocomplete="off">
+                        <button class="btn-toggle-pass" onclick="togglePassword()" type="button" tabindex="-1">
+                            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="login-error hidden" id="loginError">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    <span>Username atau password salah</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-primary" onclick="adminLogin()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+                    </svg>
+                    Masuk
+                </button>
+                <button class="btn-modal-secondary" onclick="closeAdminLogin()">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
